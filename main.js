@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-const commandLineArgs = require('command-line-args')
+// const commandLineArgs = require('command-line-args')
 const Nexmo = require('nexmo');
 const fs = require('fs');
 
