@@ -8,15 +8,15 @@ const nexmo = new Nexmo({
     apiSecret: process.env.API_SECRET
 });
 
-const optionDefinitions = [{
-    name: 'url',
-    alias: 'u',
-    type: String
-}]
+// const optionDefinitions = [{
+//     name: 'url',
+//     alias: 'u',
+//     type: String
+// }]
 
-const options = commandLineArgs(optionDefinitions)
+// const options = commandLineArgs(optionDefinitions)
 
-if (options.url == null) {
+if (process.env.URL == null) {
     console.error('Error: Url string must be passed.')
     process.exit()
 }
@@ -26,7 +26,7 @@ let scrape = async () => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    let resp = await page.goto(options.url);
+    let resp = await page.goto(process.env.URL);
 
     const result = await page.evaluate(() => {
 
