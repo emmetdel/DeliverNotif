@@ -3,9 +3,14 @@ const puppeteer = require('puppeteer');
 const Nexmo = require('nexmo');
 const fs = require('fs');
 
+const API_KEY = '96371e58';
+const API_SECRET = 'cd4e2509d398aada';
+const PHONE = 892031801;
+const URL = 'https://track.anpost.ie/TrackingResults.aspx?rtt=1&items=RP240997236GB';
+
 const nexmo = new Nexmo({
-    apiKey: process.env.API_KEY,
-    apiSecret: process.env.API_SECRET
+    apiKey: API_KEY,
+    apiSecret: API_SECRET
 });
 
 // const optionDefinitions = [{
@@ -16,17 +21,17 @@ const nexmo = new Nexmo({
 
 // const options = commandLineArgs(optionDefinitions)
 
-if (process.env.URL == null) {
-    console.error('Error: Url string must be passed.')
-    process.exit()
-}
+// if (process.env.URL == null) {
+//     console.error('Error: Url string must be passed.')
+//     process.exit()
+// }
 
 let scrape = async () => {
 
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    let resp = await page.goto(process.env.URL);
+    let resp = await page.goto(URL);
 
     const result = await page.evaluate(() => {
 
@@ -53,7 +58,7 @@ scrape().then(trackingStatus => {
 
         if (status) {
             nexmo.message.sendSms(
-                181818, process.env.PHONE_NUMBER, trackingStatus,
+                181818, PHONE, trackingStatus,
                 (err, responseData) => {
                     if (err) {
                         console.log(err);
