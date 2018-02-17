@@ -2,12 +2,9 @@
   "name": "delivr",
   "version": "1.0.0",
   "description": "A web scraper and delivery notification program.",
-  "main": "index.js",
+  "main": "main.js",
   "author": "Emmet Delaney",
   "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^9.4.6"
-  },
   "dependencies": {
     "nexmo": "^2.2.0",
     "puppeteer": "^1.1.0"
