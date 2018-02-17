@@ -101,4 +101,4 @@ let sched: NodeJS.Timer = setInterval(() => {
     console.log("Schedule ended: ", new Date().toLocaleString());
 
 
-}, 1000 * 60);
+}, 1000 * 60 * 60);
