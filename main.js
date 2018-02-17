@@ -1,30 +1,16 @@
 const puppeteer = require('puppeteer');
-// const commandLineArgs = require('command-line-args')
 const Nexmo = require('nexmo');
 const fs = require('fs');
 
-const API_KEY = '96371e58';
-const API_SECRET = 'cd4e2509d398aada';
-const PHONE = 892031801;
-const URL = 'https://track.anpost.ie/TrackingResults.aspx?rtt=1&items=RP240997236GB';
+const API_KEY = process.env.API_KEY;
+const API_SECRET = process.env.API_SECRET;
+const PHONE_NUMBER = parseInt(process.env.PHONE, 10);
+const URL = process.env.URL;
 
 const nexmo = new Nexmo({
     apiKey: API_KEY,
     apiSecret: API_SECRET
 });
-
-// const optionDefinitions = [{
-//     name: 'url',
-//     alias: 'u',
-//     type: String
-// }]
-
-// const options = commandLineArgs(optionDefinitions)
-
-// if (process.env.URL == null) {
-//     console.error('Error: Url string must be passed.')
-//     process.exit()
-// }
 
 let scrape = async () => {
 
@@ -48,32 +34,6 @@ let scrape = async () => {
     browser.close();
     return result;
 };
-
-scrape().then(trackingStatus => {
-    if (trackingStatus === 'Tracking number not found.') {
-
-        console.log(trackingStatus)
-
-    } else {
-
-        let status = hasStatusChanged(trackingStatus);
-
-        if (status) {
-            nexmo.message.sendSms(
-                181818, PHONE, trackingStatus,
-                (err, responseData) => {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        console.dir(responseData);
-                    }
-                }
-            );
-        } else {
-            console.log('Status has not changed since last check.')
-        }
-    }
-});
 
 let hasStatusChanged = (deliveryStatus) => {
 
@@ -104,4 +64,39 @@ let hasStatusChanged = (deliveryStatus) => {
         });
 
     }
-}
+};
+
+let sched = setInterval(() => {
+
+    console.log('Schedule started: ', new Date().toLocaleString())
+
+    scrape().then(trackingStatus => {
+        if (trackingStatus === 'Tracking number not found.') {
+
+            console.log(trackingStatus)
+
+        } else {
+
+            let status = hasStatusChanged(trackingStatus);
+
+            if (status) {
+                nexmo.message.sendSms(
+                    181818, PHONE_NUMBER, 'Delivery Status: ' + trackingStatus,
+                    (err, responseData) => {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            console.dir(responseData);
+                        }
+                    }
+                );
+            } else {
+                console.log('Status has not changed since last check.')
+            }
+        }
+    });
+
+    console.log('Schedule ended: ', new Date().toLocaleString())
+
+
+}, 1000 * 60 * 60);
